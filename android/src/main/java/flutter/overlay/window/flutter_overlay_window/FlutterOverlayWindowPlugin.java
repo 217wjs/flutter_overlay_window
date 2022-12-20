@@ -60,7 +60,17 @@ public class FlutterOverlayWindowPlugin implements
         pendingResult = result;
         if (call.method.equals("checkPermission")) {
             result.success(checkOverlayPermission());
-        } else if (call.method.equals("requestPermission")) {
+        } else if (call.method.equals("wakeUp")) {
+            Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage("com.hwego.flutterRider");
+            if (launchIntent != null) { 
+                launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(launchIntent);
+                result.success("wakeUp");
+            } else {
+                result.success("Failed to wakeUp");
+            }
+        }
+        else if (call.method.equals("requestPermission")) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
                 intent.setData(Uri.parse("package:" + mActivity.getPackageName()));
