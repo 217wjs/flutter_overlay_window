@@ -2,6 +2,7 @@ package flutter.overlay.window.flutter_overlay_window;
 
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -53,6 +54,11 @@ public class FlutterOverlayWindowPlugin implements
 
         WindowSetup.messenger = messenger;
         WindowSetup.messenger.setMessageHandler(this);
+
+        // App간 통신
+        Intent intent = context.getPackageManager().getLaunchIntentForPackage("com.hwego.flutterRider");
+        intent.setClassName("com.hwego.flutterRider", "com.hwego.flutterRider.OverlayReceiver");
+        context.sendBroadcast(intent);
     }
 
     @Override
@@ -62,13 +68,32 @@ public class FlutterOverlayWindowPlugin implements
             result.success(checkOverlayPermission());
         } else if (call.method.equals("wakeUp")) {
             Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage("com.hwego.flutterRider");
+            Intent broadcastIntent = new Intent("OVERLAY");
+
             if (launchIntent != null) { 
                 launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                broadcastIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+                broadcastIntent.putExtra("data", 200);
+                context.sendBroadcast(broadcastIntent);
                 context.startActivity(launchIntent);
                 result.success("wakeUp");
             } else {
                 result.success("Failed to wakeUp");
             }
+        } else if (call.method.equals("break")) {
+            Intent broadcastIntent = new Intent("OVERLAY");
+            broadcastIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+            broadcastIntent.putExtra("data", 300);
+            context.sendBroadcast(broadcastIntent);
+            result.success("break");
+
+        } else if (call.method.equals("work")) {
+            Intent broadcastIntent = new Intent("OVERLAY");
+            broadcastIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+            broadcastIntent.putExtra("data", 400);
+            context.sendBroadcast(broadcastIntent);
+            result.success("work");
+
         }
         else if (call.method.equals("requestPermission")) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
