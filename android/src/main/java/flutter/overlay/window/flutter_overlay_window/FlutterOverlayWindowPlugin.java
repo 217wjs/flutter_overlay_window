@@ -94,8 +94,14 @@ public class FlutterOverlayWindowPlugin implements
             context.sendBroadcast(broadcastIntent);
             result.success("work");
 
-        }
-        else if (call.method.equals("requestPermission")) {
+        } else if (call.method.equals("start")) {
+            Intent broadcastIntent = new Intent("OVERLAY");
+            broadcastIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+            broadcastIntent.putExtra("data", 500);
+            context.sendBroadcast(broadcastIntent);
+            result.success("start");
+
+        } else if (call.method.equals("requestPermission")) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
                 intent.setData(Uri.parse("package:" + mActivity.getPackageName()));
@@ -147,7 +153,6 @@ public class FlutterOverlayWindowPlugin implements
         } else {
             result.notImplemented();
         }
-
     }
 
     @Override
@@ -205,5 +210,4 @@ public class FlutterOverlayWindowPlugin implements
         }
         return false;
     }
-
 }
